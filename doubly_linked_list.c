@@ -1,68 +1,125 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+// Define a structure for a doubly linked list node
 struct Node {
-    int data;
-    struct Node *prev;
-    struct Node *next;
+   int data;
+   struct Node* prev;
+   struct Node* next;
 };
-
-struct Node *head = NULL;
-
-void insert(int value) {
-    struct Node *newNode = malloc(sizeof(struct Node));
-
-    newNode->data = value;
-    newNode->prev = NULL;
-    newNode->next = head;
-
-    if (head != NULL)
-        head->prev = newNode;
-
-    head = newNode;
+// Function to insert a new node at the beginning of the doubly linked list
+void insertAtBeginning(struct Node** head, int data) {
+   struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+   newNode->data = data;
+   newNode->prev = NULL;
+ 
+   if (*head == NULL) {
+       newNode->next = NULL;
+       *head = newNode;
+   } else {
+       newNode->next = *head;
+       (*head)->prev = newNode;
+       *head = newNode;
+   }
 }
-
-void display() {
-    struct Node *temp = head;
-
-    printf("Doubly Linked List: ");
-
-    while (temp != NULL) {
-        printf("%d <-> ", temp->data);
-        temp = temp->next;
-    }
-
-    printf("NULL\n");
+// Function to insert a new node at the end of the doubly linked list
+void insertAtEnd(struct Node** head, int data) {
+   struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+   newNode->data = data;
+   newNode->next = NULL;
+ 
+   if (*head == NULL) {
+       newNode->prev = NULL;
+       *head = newNode;
+   } else {
+       struct Node* current = *head;
+       while (current->next != NULL) {
+           current = current->next;
+       }
+       current->next = newNode;
+       newNode->prev = current;
+   }
 }
-
-void deleteNode() {
-    if (head == NULL) {
-        printf("List is empty\n");
-        return;
-    }
-
-    struct Node *temp = head;
-
-    printf("%d deleted\n", temp->data);
-
-    head = head->next;
-
-    if (head != NULL)
-        head->prev = NULL;
-
-    free(temp);
+// Function to delete a node with a given value from the doubly linked list
+void deleteNode(struct Node** head, int key) {
+   if (*head == NULL) {
+printf("The doubly linked list is empty.\n");
+       return;
+   }
+   struct Node* current = *head;
+   while (current != NULL) {
+       if (current->data == key) {
+           if (current->prev != NULL) {
+               current->prev->next = current->next;
+           } else {
+               *head = current->next;
+           }
+ 
+           if (current->next != NULL) {
+               current->next->prev = current->prev;
+           }
+ 
+           free(current);
+printf("Node with data %d deleted from the doubly linked list.\n", key);
+           return;
+       }
+       current = current->next;
+   }
+ 
+printf("Node with data %d not found in the doubly linked list.\n", key);
 }
-
+ 
+// Function to display the elements of the doubly linked list
+void display(struct Node* head) {
+   if (head == NULL) {
+printf("The doubly linked list is empty.\n");
+       return;
+   }
+   struct Node* current = head;
+   while (current != NULL) {
+printf("%d <-> ", current->data);
+       current = current->next;
+   }
+   printf("NULL\n");
+}
 int main() {
-    insert(10);
-    insert(20);
-    insert(30);
-
-    display();
-
-    deleteNode();
-
-    display();
-
-    return 0;
+   struct Node* head = NULL;
+   int choice, data, key;
+ 
+   while (1) {
+printf("1. Insert at the beginning\n");
+printf("2. Insert at the end\n");
+printf("3. Delete a node\n");
+printf("4. Display\n");
+printf("5. Quit\n");
+printf("Enter your choice: ");
+scanf("%d", &choice);
+       switch (choice) {
+           case 1:
+printf("Enter data to insert at the beginning: ");
+scanf("%d", &data);
+insertAtBeginning(&head, data);
+               break;
+           case 2:
+printf("Enter data to insert at the end: ");
+scanf("%d", &data);
+insertAtEnd(&head, data);
+               break;
+           case 3:
+printf("Enter data to delete: ");
+scanf("%d", &key);
+deleteNode(&head, key);
+               break;
+           case 4:
+printf("Doubly Linked List:\n");
+               display(head);
+               break;
+           case 5:
+exit(0);
+           default:
+printf("Invalid choice. Please try again.\n");
+       }
+   }
+ 
+   return 0;
 }
+ 
